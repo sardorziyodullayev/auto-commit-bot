@@ -2,7 +2,7 @@ name: Daily Auto Commit
 
 on:
   schedule:
-    - cron: '0 5 * * *'  # Every day at 10:00 Tashkent time
+    - cron: '0 5 * * *'  # Har kuni soat 5:00 UTC (Toshkent vaqti bilan 10:00)
   workflow_dispatch:
 
 jobs:
@@ -15,14 +15,23 @@ jobs:
       - name: Set timezone
         run: sudo timedatectl set-timezone Asia/Tashkent
 
-      - name: Make changes
+      - name: Make random commit count
+        id: random_commit
         run: |
-          echo "$(date) - auto update" >> log.txt
+          RANDOM_NUMBER=$((RANDOM % 5 + 1))  # 1 dan 5 gacha random son
+          echo "Random commit count: $RANDOM_NUMBER"
+          echo "commit_count=$RANDOM_NUMBER" >> $GITHUB_ENV
 
-      - name: Commit changes
+      - name: Make changes and commit
         run: |
-          git config --global user.name "SardorBot"
-          git config --global user.email "sardor@example.com"
-          git add .
-          git commit -m "Daily auto commit"
-          git push
+          for i in $(seq 1 $commit_count); do
+            echo "$(date) - auto update $i" >> log.txt
+            git config --global user.name "SardorBot"
+            git config --global user.email "sardor@example.com"
+            git add .
+            git commit -m "Daily auto commit $i"
+          done
+
+      - name: Push changes
+        run: git push
+        
