@@ -1,0 +1,28 @@
+name: Daily Auto Commit
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # Every day at 10:00 Tashkent time
+  workflow_dispatch:
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set timezone
+        run: sudo timedatectl set-timezone Asia/Tashkent
+
+      - name: Make changes
+        run: |
+          echo "$(date) - auto update" >> log.txt
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "SardorBot"
+          git config --global user.email "sardor@example.com"
+          git add .
+          git commit -m "Daily auto commit"
+          git push
